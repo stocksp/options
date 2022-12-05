@@ -14,37 +14,51 @@ const handler = async (req, res) => {
         })
       )
     );
-    console.log("result", JSON.stringify(result));
+    //console.log("result", JSON.stringify(result));
     let newData = [...data];
     newData.forEach((obj) => {
-      // first find a result in our array of results
-      // it will be an object
-      const foundResult = result.find((r) => r.underlyingSymbol === obj.name);
-      if (foundResult) {
+      // first find all the results that match our symbol
+      // we may have AAPL at two different expiration dates
+      const foundResults = result.filter(
+        (r) => r.underlyingSymbol === obj.name
+      );
+      let done = false;
+      if (foundResults.length > 0) {
         // check if the objects expirationDate is what we are looking for
-        const foundExpireDate =
-          foundResult.options[0].expirationDate
-            .toISOString()
-            .substring(0, 10) === obj.date;
+        // we need to look in ALL results that have obj.name we may have multiple requests at
+        // different dates
+        const foundExpireDate = foundResults.find(
+          (r) =>
+            r.options[0].expirationDate.toISOString().substring(0, 10) ===
+            obj.date
+        );
+        // now we have a single result for our symbol and date
+        // or we have an error (else below)
         if (foundExpireDate) {
           const theType = obj.type == "call" ? "calls" : "puts";
-          const foundOption = foundResult.options[0][theType].find(
-            (o) => o.strike == obj.strike
-          );
-          if (foundOption) {
-            obj.price = foundOption.lastPrice;
-            obj.parentPrice = foundResult.quote.regularMarketPrice;
+          // this will be the array of either puts or calls
+          const putOrcalls = foundExpireDate.options[0][theType];
+          // this will be the single put or call where we find the price
+          const strike = putOrcalls.find((p) => p.strike === obj.strike);
+          
+          if (strike) {
+            obj.price = strike.lastPrice;
+            obj.parentPrice = foundExpireDate.quote.regularMarketPrice;
+            // both of these else may be overwritten if we find what we
+            // are looking for on a subsequent obj
           } else {
             console.log("didn't find option");
             obj.price = -1;
           }
         } else {
-          console.log("didn't find foundExpireDate");
+          console.log("didn't find expireDate");
           obj.price = -1;
+          obj.parentPrice = -1;
         }
       } else {
         console.log("didn't find result");
         obj.price = -1;
+        obj.parentPrice = -1;
       }
     });
 

@@ -8,6 +8,12 @@ content-type: application/json
 {
     "data":[
         {
+            "name": "AAPL",
+            "strike": 145,
+            "type": "put",
+            "date": "2023-01-20"
+        },
+        {
             "name": "XOM",
             "type": "put",
             "strike": 97.5,
@@ -16,7 +22,7 @@ content-type: application/json
         {
             "name": "AAPL",
             "strike": 135,
-            "type": "call",
+            "type": "put",
             "date": "2023-01-20"
         }
     ]
