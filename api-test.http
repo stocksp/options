@@ -22,3 +22,25 @@ content-type: application/json
     ]
 }
 
+###
+post https://coda-options.vercel.app//api/getOptionsArr HTTP/1.1
+content-type: application/json
+
+{
+    "data":[
+        {
+            "name": "XOM",
+            "type": "put",
+            "strike": 97.5,
+            "date": "2023-01-20"
+        },
+        {
+            "name": "AAPL",
+            "strike": 135,
+            "type": "call",
+            "date": "2023-01-20"
+        }
+    ]
+}
+
+
