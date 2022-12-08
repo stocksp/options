@@ -4,6 +4,8 @@ get https://coda-options.vercel.app/api/getOptionsData?name=AAPL
 ###
 get http://localhost:3000/api/getOptions?name=AAPL&optionDate=2023-01-20
 ###
+get https://coda-options.vercel.app/api/getOptions?name=AAPL&optionDate=2023-01-20
+###
 post http://localhost:3001/api/getOptionsArr HTTP/1.1
 content-type: application/json
 
@@ -31,7 +33,7 @@ content-type: application/json
 }
 
 ###
-post https://coda-options.vercel.app//api/getOptionsArr HTTP/1.1
+post https://coda-options.vercel.app/api/getOptionsArr HTTP/1.1
 content-type: application/json
 
 {
@@ -56,5 +58,3 @@ content-type: application/json
         }
     ]
 }
-
-

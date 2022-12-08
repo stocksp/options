@@ -42,6 +42,7 @@ const handler = async (req, res) => {
           const strike = putOrcalls.find((p) => p.strike === obj.strike);
           
           if (strike) {
+            obj.contractSymbol = strike.contractSymbol;
             obj.price = strike.lastPrice;
             obj.parentPrice = foundExpireDate.quote.regularMarketPrice;
             // both of these else may be overwritten if we find what we
