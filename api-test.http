@@ -13,21 +13,9 @@ content-type: application/json
     "data":[
         {
             "name": "AAPL",
-            "strike": 145,
+            "strike": 250,
             "type": "put",
-            "date": "2023-01-20"
-        },
-        {
-            "name": "XOM",
-            "type": "put",
-            "strike": 97.5,
-            "date": "2023-01-20"
-        },
-        {
-            "name": "AAPL",
-            "strike": 135,
-            "type": "put",
-            "date": "2023-01-20"
+            "date": "2022-12-09"
         }
     ]
 }

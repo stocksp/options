@@ -50,6 +50,8 @@ const handler = async (req, res) => {
           } else {
             console.log("didn't find option");
             obj.price = -1;
+            // did find the parent price
+            obj.parentPrice = foundExpireDate.quote.regularMarketPrice;
           }
         } else {
           console.log("didn't find expireDate");
