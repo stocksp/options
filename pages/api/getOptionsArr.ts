@@ -1,11 +1,65 @@
 import yahooFinance from "yahoo-finance2";
-const handler = async (req, res) => {
+import redis from "../../lib/redis";
+
+type info = {
+  name: string;
+  strike: number;
+  type: string;
+  date: string;
+  contractSymbol?: string;
+  price?: number;
+  parentPrice?: number;
+  cached?: boolean;
+};
+type Data = {
+  body: Array<info>;
+};
+
+const handler = async (req: any, res: any) => {
   const data = req.body.data;
+ // const foundData: Array<info> = [];
 
   console.log("starting getOptionsArr:", JSON.stringify(data));
   try {
+    const all = await Promise.all(
+      data.map(async (d: info) => {
+        const key = `${d.name}:${d.date}:${d.type}:${d.strike}`;
+        const cache = (await redis.get(key)) as info;
+        if (cache) {
+          return { ...cache, cached: true };
+        } else {
+          return { cached: false, ...d };
+        }
+      })
+    );
+    const todos = all.filter(d => !d.cached);
+    const foundData = all.filter(d => d.cached);
+    // const todos = await data.reduce(async (acc: Array<info>, v: info) => {
+    //   const key = `${v.name}:${v.date}:${v.type}:${v.strike}`;
+    //   const cache = (await redis.get(key)) as info;
+
+    //   if (cache) {
+    //     foundData.push(v);
+    //     return acc;
+    //   }
+    //   // Otherwise add this value to the list
+    //   return acc.push(v);
+    // }, Promise.resolve([]));
+
+    // const todos = data.filter(async (d: info) => {
+    //   const key = `${d.name}:${d.date}:${d.type}:${d.strike}`;
+    //   const cache = (await redis.get(key)) as info;
+    //   if (cache) {
+    //     console.log(`key ${key} from cache`);
+    //     foundData.push(cache);
+    //     return false;
+    //   } else {
+    //     // this guy goes to Yahoo with todos
+    //     return true;
+    //   }
+    // });
     const result = await Promise.all(
-      data.map((todo) =>
+      todos.map((todo: info) =>
         yahooFinance.options(todo.name, {
           lang: "en-US",
           formatted: false,
@@ -15,8 +69,10 @@ const handler = async (req, res) => {
       )
     );
     //console.log("result", JSON.stringify(result));
-    let newData = [...data];
-    newData.forEach((obj) => {
+    let newData = [...todos];
+    newData.forEach(async (obj) => {
+      // for Redi
+      const key = `${obj.name}:${obj.date}:${obj.type}:${obj.strike}`;
       // first find all the results that match our symbol
       // we may have AAPL at two different expiration dates
       const foundResults = result.filter(
@@ -39,14 +95,15 @@ const handler = async (req, res) => {
           // this will be the array of either puts or calls
           const putOrcalls = foundExpireDate.options[0][theType];
           // this will be the single put or call where we find the price
-          const strike = putOrcalls.find((p) => p.strike === obj.strike);
-          
+          const strike = putOrcalls.find((p: any) => p.strike === obj.strike);
+
           if (strike) {
             obj.contractSymbol = strike.contractSymbol;
             obj.price = strike.lastPrice;
             obj.parentPrice = foundExpireDate.quote.regularMarketPrice;
             // both of these else may be overwritten if we find what we
             // are looking for on a subsequent obj
+            await redis.setex(key, 1800, JSON.stringify(obj));
           } else {
             console.log("didn't find option");
             obj.price = -1;
@@ -64,9 +121,10 @@ const handler = async (req, res) => {
         obj.parentPrice = -1;
       }
     });
-
-    res.json(newData);
-  } catch (error) {
+    foundData.push(...newData);
+    console.log(`sending back: ${foundData.length}`);
+    res.json(foundData);
+  } catch (error: any) {
     console.log("error thrown in getOptions", error);
     res.json("Error: " + error.toString());
   }

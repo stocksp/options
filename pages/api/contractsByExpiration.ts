@@ -1,7 +1,17 @@
 import yahooFinance from "yahoo-finance2"
 import redis from "../../lib/redis"
 
-const handler = async (req, res) => {
+const handler = async (
+  req: {
+    query: {
+      ticker: string
+      expirationDate: string
+      bustCache: string
+      cacheTTL: number
+    }
+  },
+  res: any
+) => {
   const ticker = req.query.ticker
   const expirationDate = req.query.expirationDate
   const bustCache = req.query.bustCache
@@ -52,7 +62,7 @@ const handler = async (req, res) => {
     console.log(`sending ${key} to cache with ttl ${ttl}`)
     await redis.setex(key, ttl, JSON.stringify(returnData))
     res.json(returnData)
-  } catch (error) {
+  } catch (error: any) {
     console.log("error thrown in contractsByExpiration", error)
     res.json("Error: " + error.toString())
   }

@@ -8,15 +8,28 @@ get http://localhost:3001/api/getOptions?name=AAPL&optionDate=2023-07-21&options
 get https://coda-options.vercel.app/api/getOptions?name=AAPL&optionDate=2023-01-20
 
 ###
-post http://localhost:3001/api/getOptionsArr HTTP/1.1
+post http://localhost:3000/api/getOptionsArr HTTP/1.1
 content-type: application/json
+
 {
     "data":[
         {
             "name": "AAPL",
-            "strike": 250,
+            "strike": 145,
             "type": "put",
-            "date": "2022-07-21"
+            "date": "2023-01-20"
+        },
+        {
+            "name": "XOM",
+            "type": "put",
+            "strike": 97.5,
+            "date": "2023-01-20"
+        },
+        {
+            "name": "AAPL",
+            "strike": 135,
+            "type": "put",
+            "date": "2023-01-20"
         }
     ]
 }
@@ -48,6 +61,6 @@ content-type: application/json
 }
 
 ###
-get http://localhost:3000/api/contractsByExpiration?ticker=AAPL&expirationDate=2023-01-20
+get http://localhost:3001/api/contractsByExpiration?ticker=AAPL&expirationDate=2023-01-20
 ###
-get http://localhost:3000/api/contractsByExpiration?ticker=AAPL&expirationDate=2023-01-20&bustCache=true&cacheTTL=600
+get http://localhost:3001/api/contractsByExpiration?ticker=AAPL&expirationDate=2023-01-20&bustCache=true&cacheTTL=600
