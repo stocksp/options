@@ -1,24 +1,21 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import type { NextApiRequest, NextApiResponse } from "next";
-import redis from "../../lib/redis";
+import type { NextApiRequest, NextApiResponse } from "next"
+import redis from "../../lib/redis"
 type Data = {
-  count: number;
+  count: number
   someData: {
-    name: string;
+    name: string
     pets: Array<{
-      name: string;
-      species: string;
-      age: number;
-      isMammal: boolean;
-    }>;
-  };
-};
+      name: string
+      species: string
+      age: number
+      isMammal: boolean
+    }>
+  }
+}
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<Data>
-) {
-  const count = await redis.incr("counter");
+export default async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
+  const count = await redis.incr("counter")
   const someData = {
     name: "Roberta McDonald",
     pets: [
@@ -35,7 +32,7 @@ export default async function handler(
         isMammal: false,
       },
     ],
-  };
-  await redis.set("paulTest", JSON.stringify(someData));
-  res.status(200).json({ count, someData });
+  }
+  await redis.set("paulTest", JSON.stringify(someData))
+  res.status(200).json({ count, someData })
 }
