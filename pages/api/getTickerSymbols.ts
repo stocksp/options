@@ -23,17 +23,15 @@ const handler = async (req: any, res: any) => {
       res.json(cache)
       return
     }
-    //const theData = require("data/cboesymboldirequityindex.txt")
     //Find the absolute path of the json directory
     const dataDirectory = path.join(process.cwd(), "data")
     //Read the json data file data.json
     const fileContents = await fs.readFile(dataDirectory + "/cboesymboldirequityindex.csv", "utf8")
 
     let array = fileContents.toString().split("\n")
+    // we have strings in strings so strip one out
     array = array.map((x) => x.replaceAll('"', ""))
-    let headers = array[0].split(", ")
     let result = []
-    // Since headers are separated, we
     // need to traverse remaining n-1 rows.
     for (let i = 1; i < array.length - 1; i++) {
       let obj = {} as theObj
