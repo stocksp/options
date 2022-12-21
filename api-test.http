@@ -66,3 +66,7 @@ content-type: application/json
 get http://localhost:3001/api/contractsByExpiration?ticker=AAPL&expirationDate=2023-01-20
 ###
 get http://localhost:3001/api/contractsByExpiration?ticker=AAPL&expirationDate=2023-01-20&bustCache=true&cacheTTL=600
+###
+get http://localhost:3000/api/historicData?symbol=CPG221216P00007500&date=2022-12-15
+###
+get http://localhost:3000/api/historicData?symbol=AAPL&date=2022-11-15
