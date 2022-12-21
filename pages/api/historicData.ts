@@ -1,6 +1,5 @@
 import yahooFinance from "yahoo-finance2"
 import redis from "../../lib/redis"
-import { format } from "date-fns"
 
 const handler = async (req: any, res: any) => {
   const name = req.query.symbol
