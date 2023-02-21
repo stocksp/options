@@ -17,8 +17,8 @@ type FormValues = {
   ticker: string[]
   strategy: string
   buySell: string
-  expiration: string
-  strike: number
+  expiration: Strike
+  strike: Strike
   contracts: number
   premium: number
   curPrice: number
@@ -26,6 +26,10 @@ type FormValues = {
 type Ticker = {
   ticker: string
   name: string
+}
+type Strike = {
+  label: string
+  value: string
 }
 const defaultValues: DefaultValues<FormValues> = {
   openedDate: new Date(),
@@ -55,11 +59,11 @@ export default function Home(this: any) {
       return
     }
     if (ticker && !optionDataFor.has(ticker)) {
-      resetField('strike')
+      resetField("strike")
       getOptionsDataFor(ticker)
       setActiveTicker(ticker)
     } else {
-      resetField('strike')
+      resetField("strike")
       setActiveTicker(ticker)
       setValue("curPrice", optionDataFor.get(ticker).price)
     }
@@ -82,6 +86,10 @@ export default function Home(this: any) {
     } catch (e) {
       console.log("Ticker error", e)
     }
+  }
+  const setOptionPrice = async (stike: number) => {
+    const values = getValues()
+    console.log("values", values, "strike", stike)
   }
   const getTickers = async () => {
     if (!hasTickers) {
@@ -118,6 +126,7 @@ export default function Home(this: any) {
     reset,
     control,
     setValue,
+    getValues,
     resetField,
     setError,
     clearErrors,
@@ -229,12 +238,12 @@ export default function Home(this: any) {
                 name="expiration"
                 control={control}
                 rules={{ required: "Expiration is required" }}
-                render={({ field }) => (
+                render={({ field: { onChange, value } }) => (
                   <Select
-                    {...field}
                     placeholder="Select Expiration"
                     options={getExpirationsFor(activeTicker)}
-                    value={field.value}
+                    value={value}
+                    onChange={onChange}
                   />
                 )}
               />
@@ -247,11 +256,15 @@ export default function Home(this: any) {
                 name="strike"
                 control={control}
                 rules={{ required: "Strike is required" }}
-                render={({ field }) => (
+                render={({ field: { onChange, value } }) => (
                   <Select
-                    {...field}
-                    placeholder="Select Expiration"
+                    value={value}
+                    placeholder="Select Strike"
                     options={getStikesFor(activeTicker)}
+                    onChange={(value) => {
+                      onChange(value)
+                      console.log(value)
+                    }}
                   />
                 )}
               />
