@@ -1,6 +1,9 @@
 .container {
   padding: 0 2rem;
 }
+.typehead * {
+  margin: 0;
+}
 
 .main {
   min-height: 100vh;
